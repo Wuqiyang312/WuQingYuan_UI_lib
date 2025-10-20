@@ -1,8 +1,8 @@
-#include "WuQingYuan_UI.h"
+#include "Axeuh_UI.h"
 #include "esp_task_wdt.h"
 
-CharLenMap WuQingYuan_UI::len_c;
-SimpleKalmanFilter WuQingYuan_UI::fps_filter;
+CharLenMap Axeuh_UI::len_c;
+SimpleKalmanFilter Axeuh_UI::fps_filter;
 
 // MenuOption Axeuh_error[] = // 菜单信息
 //     {
@@ -11,7 +11,7 @@ SimpleKalmanFilter WuQingYuan_UI::fps_filter;
 // };
 
 
-void WuQingYuan_UI_Ebook::drawEbook(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Panel *P, WuQingYuan_UI *m)
+void Axeuh_UI_Ebook::drawEbook(U8G2 *D, IN_PUT_Mode IN, Axeuh_UI_Panel *P, Axeuh_UI *m)
 {
     if (*if_display || !get_animation_all_isok())
     {
@@ -240,7 +240,7 @@ void WuQingYuan_UI_Ebook::drawEbook(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Panel
     }
 }
 
-void WuQingYuan_UI_Panel::drawPanel(U8G2 *D, WuQingYuan_UI *m, IN_PUT_Mode IN)
+void Axeuh_UI_Panel::drawPanel(U8G2 *D, Axeuh_UI *m, IN_PUT_Mode IN)
 {
     if (if_display || !get_animation_all_isok())
     {
@@ -343,7 +343,7 @@ void WuQingYuan_UI_Panel::drawPanel(U8G2 *D, WuQingYuan_UI *m, IN_PUT_Mode IN)
         xSemaphoreGive(xMutex);
     }
 }
-void WuQingYuan_UI_TextMenu::draw_MenuOption(U8G2 *D, unsigned long currentMillis, int &text_height_now)
+void Axeuh_UI_TextMenu::draw_MenuOption(U8G2 *D, unsigned long currentMillis, int &text_height_now)
 {
     for (uint8_t i = 0; i < menuOptions_index; i++)
     {
@@ -595,7 +595,7 @@ void WuQingYuan_UI_TextMenu::draw_MenuOption(U8G2 *D, unsigned long currentMilli
     }
 }
 
-void WuQingYuan_UI_TextMenu::draw_textmenu(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Panel *P, WuQingYuan_UI *m)
+void Axeuh_UI_TextMenu::draw_textmenu(U8G2 *D, IN_PUT_Mode IN, Axeuh_UI_Panel *P, Axeuh_UI *m)
 {
     xSemaphoreTake(xMutex, 100);
     if (*if_display || !get_animation_interface_isok())
@@ -962,7 +962,7 @@ void WuQingYuan_UI_TextMenu::draw_textmenu(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_U
     }
     xSemaphoreGive(xMutex);
 }
-void WuQingYuan_UI_slider::drawSlider(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Panel *P, WuQingYuan_UI *m)
+void Axeuh_UI_slider::drawSlider(U8G2 *D, IN_PUT_Mode IN, Axeuh_UI_Panel *P, Axeuh_UI *m)
 {
     if (*if_display || !get_animation_all_isok())
     {
@@ -1154,7 +1154,7 @@ void WuQingYuan_UI_slider::drawSlider(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Pan
         animation(&progress_w_now, progress_w, m->fps / 3 * 4);
     }
 }
-void WuQingYuan_UI_Cube::drawCube(U8G2 *D, WuQingYuan_UI *m)
+void Axeuh_UI_Cube::drawCube(U8G2 *D, Axeuh_UI *m)
 {
     xSemaphoreTake(xMutex, 100);
     unsigned long currentTime = millis();
@@ -1217,11 +1217,11 @@ void WuQingYuan_UI_Cube::drawCube(U8G2 *D, WuQingYuan_UI *m)
 }
 #ifdef CHINESE_KEYBOARD
 
-void WuQingYuan_UI_Keyboard::SELECT_(String output_str, String mystring, const char **key_arr)
+void Axeuh_UI_Keyboard::SELECT_(String output_str, String mystring, const char **key_arr)
 {
 }
 
-void WuQingYuan_UI_Keyboard::drawKeyboard(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI_Panel *P, WuQingYuan_UI *m) // 史山
+void Axeuh_UI_Keyboard::drawKeyboard(U8G2 *D, IN_PUT_Mode IN, Axeuh_UI_Panel *P, Axeuh_UI *m) // 史山
 {
     if (*if_display || !get_animation_interface_isok())
     {
@@ -1763,7 +1763,7 @@ void WuQingYuan_UI_Keyboard::drawKeyboard(U8G2 *D, IN_PUT_Mode IN, WuQingYuan_UI
     // }
 }
 #endif
-void WuQingYuan_UI::menu_display() // 绘制函数
+void Axeuh_UI::menu_display() // 绘制函数
 {
     esp_task_wdt_init(30, false); // 设置看门狗为30s，且不重启
     while (1)
