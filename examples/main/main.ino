@@ -1,10 +1,10 @@
 /*
- * 基于Arduino的UI系统示例代码，使用Axeuh_UI库实现复杂界面交互
+ * 基于Arduino的UI系统示例代码，使用WuQingYuan_UI库实现复杂界面交互
  * 包含矩阵键盘输入、OLED显示、多级菜单、动画、滑动条、3D立方体等多种功能
  */
 
 #include <Arduino.h>
-#include "Axeuh_UI.h"
+#include "WuQingYuan_UI.h"
 #include "gif.h"
 #include <Wire.h>
 #include <SPI.h>
@@ -23,7 +23,7 @@
 // 使用硬件SPI的OLED显示配置（参数：旋转方向, CS引脚, DC引脚, Reset引脚）
 // U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2_(U8G2_R0); //iic方案
 U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2_(U8G2_R0, OLED_CS, OLED_DC, OLED_Reset);
-Axeuh_UI myui(&u8g2_); // 初始化UI系统
+WuQingYuan_UI myui(&u8g2_); // 初始化UI系统
 
 // 动画资源定义 ----------------------------------------------------
 // 声明图片列表参数信息
@@ -55,7 +55,7 @@ Menu_gif my_gif_4 = {epd_bitmap_allArray1, 30, 40, 2, 50, 50, 30, 0, AutoPlay, S
 MenuOption myOptions1[] = // 菜单信息
     {
         {"[ 首页 ]", 14, ALIGN_CENTER, TEXT, nullptr, No_Trigger, nullptr, No_Focusing},
-        {"Axeuh_UI 2.0", 14},
+        {"WuQingYuan_UI 2.0", 14},
         {"~ 设置fps上限", 14},
         {"~ 当前选项高度", 12},
         {"多行文本测试12345678", 24, LEFT_CENTER, TEXT_MORE},
@@ -88,7 +88,7 @@ static MenuOption myOptions3[] = // 菜单信息
         {"5", 14},
         {"~ 返回", 14, LEFT_CENTER, TEXT, nullptr, Trigger},
 };
-String version_t = R"(Axeuh_UI 2.0
+String version_t = R"(WuQingYuan_UI 2.0
 折腾了几个星期
 重构了代码
 主要功能和特性:
@@ -108,34 +108,34 @@ String version_t = R"(Axeuh_UI 2.0
 )";
 
 // UI组件声明 ------------------------------------------------------
-Axeuh_UI_StatusBar my_statusbar; // 声明状态栏
-Axeuh_UI_Cube cube;              // 3D立方体
+WuQingYuan_UI_StatusBar my_statusbar; // 声明状态栏
+WuQingYuan_UI_Cube cube;              // 3D立方体
 
-Axeuh_UI_TextMenu my_text_1_Panel(myOptions1, sizeof(myOptions1) / sizeof(myOptions1[0])); // 声明菜单
-Axeuh_UI_TextMenu my_text_2(myOptions2, sizeof(myOptions2) / sizeof(myOptions2[0]));       // 声明菜单
-Axeuh_UI_TextMenu my_text_3(myOptions3, sizeof(myOptions3) / sizeof(myOptions3[0]));       // 声明菜单
+WuQingYuan_UI_TextMenu my_text_1_Panel(myOptions1, sizeof(myOptions1) / sizeof(myOptions1[0])); // 声明菜单
+WuQingYuan_UI_TextMenu my_text_2(myOptions2, sizeof(myOptions2) / sizeof(myOptions2[0]));       // 声明菜单
+WuQingYuan_UI_TextMenu my_text_3(myOptions3, sizeof(myOptions3) / sizeof(myOptions3[0]));       // 声明菜单
 
 // 传递文本 String
-Axeuh_UI_Ebook my_Ebook_1(version_t); // 声明文本查看窗口
+WuQingYuan_UI_Ebook my_Ebook_1(version_t); // 声明文本查看窗口
 
 // String name,        滑动条标题文本
 // float *num,        对应修改值的指针
 // int16_t min,        最小值
 // int16_t max,        最大值
 // float unit_ = 1       刻度单位
-Axeuh_UI_slider my_slider("当前选项高度", nullptr, 12, 50); // 声明滑动条窗体
+WuQingYuan_UI_slider my_slider("当前选项高度", nullptr, 12, 50); // 声明滑动条窗体
 
-Axeuh_UI_Keyboard keyborad; // 声明拼音键盘
+WuQingYuan_UI_Keyboard keyborad; // 声明拼音键盘
 
 // 面板声明 ----------------------------------------------------
 // 不重复的面板，可以保留多层级的菜单的位置等属性，而不是每次都要重新设置
-Axeuh_UI_Panel my_Panel_1;
-Axeuh_UI_Panel my_Panel_2;
-Axeuh_UI_Panel my_Panel_3;
-Axeuh_UI_Panel my_Panel_4;
-Axeuh_UI_Panel my_Panel_text;
-Axeuh_UI_Panel my_Panel_slider;
-Axeuh_UI_Panel my_Panel_keyboard;
+WuQingYuan_UI_Panel my_Panel_1;
+WuQingYuan_UI_Panel my_Panel_2;
+WuQingYuan_UI_Panel my_Panel_3;
+WuQingYuan_UI_Panel my_Panel_4;
+WuQingYuan_UI_Panel my_Panel_text;
+WuQingYuan_UI_Panel my_Panel_slider;
+WuQingYuan_UI_Panel my_Panel_keyboard;
 
 // 输入处理函数 ----------------------------------------------------
 IN_PUT_Mode my_ui_input()
@@ -154,10 +154,10 @@ IN_PUT_Mode my_ui_input()
 }
 // 回调函数组 ------------------------------------------------------
 // 设置菜单回调
-void AllCallback_my_text3(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_text3(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
-  // Axeuh_UI_Panel *p            为当前面板类
-  // Axeuh_UI *m                总ui类
+  // WuQingYuan_UI_Panel *p            为当前面板类
+  // WuQingYuan_UI *m                总ui类
   // p->get_textmenu_num_now();  返回当前选项的索引
   int key = p->get_textmenu_num_now();
   if (key == 7)
@@ -176,7 +176,7 @@ void AllCallback_my_text3(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void AllCallback_my_text2(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_text2(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
   int key = p->get_textmenu_num_now(); // 获取当前选中选项
 
@@ -243,7 +243,7 @@ void AllCallback_my_text2(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void AllCallback_my_Popup_text1(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_Popup_text1(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
   int key = 0;
   key = p->get_textmenu_num_now();
@@ -319,7 +319,7 @@ void AllCallback_my_Popup_text1(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void my_ebook_callback(Axeuh_UI_Panel *p, Axeuh_UI *m) // 文本显示窗口的回调函数  在退出时触发
+void my_ebook_callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m) // 文本显示窗口的回调函数  在退出时触发
 {
   p->Parent_Panel->Input_of(); // 打开父级面板的输入
   p->off();                    // 关闭
