@@ -1,6 +1,6 @@
 # Arduino 交互式 UI 系统
 
-基于 Arduino 平台和 Axeuh_UI 库开发的综合界面系统，集成多级菜单、动态图形、3D 渲染和硬件交互功能。基于 U8G2 库实现高性能显示驱动。
+基于 Arduino 平台和 WuQingYuan_UI 库开发的综合界面系统，集成多级菜单、动态图形、3D 渲染和硬件交互功能。基于 U8G2 库实现高性能显示驱动。
 
 GIF 或图片的转换在这里 https://javl.github.io/image2cpp/ 记得勾 swap 选项
 (GIF 需要先转换成一帧一帧的图片)
@@ -24,14 +24,14 @@ GIF 或图片的转换在这里 https://javl.github.io/image2cpp/ 记得勾 swap
 
   - 128x64 OLED 显示驱动（U8G2 集成）
   - GIF 动画支持（`Menu_gif`结构）
-  - 实时 3D 立方体渲染（`Axeuh_UI_Cube`类）
+  - 实时 3D 立方体渲染（`WuQingYuan_UI_Cube`类）
 
 - **交互组件库**
 
-  - 参数滑动调节条（`Axeuh_UI_slider`类）
-  - 中文拼音输入键盘（`Axeuh_UI_Keyboard`类）
-  - 状态栏组件（`Axeuh_UI_StatusBar`类）
-  - 弹窗（`Axeuh_UI_Panel`类）
+  - 参数滑动调节条（`WuQingYuan_UI_slider`类）
+  - 中文拼音输入键盘（`WuQingYuan_UI_Keyboard`类）
+  - 状态栏组件（`WuQingYuan_UI_StatusBar`类）
+  - 弹窗（`WuQingYuan_UI_Panel`类）
 
 - **系统特性**
   - 异步 UI 刷新（`menu_display_xtaskbegin`）
@@ -76,7 +76,7 @@ GIF 或图片的转换在这里 https://javl.github.io/image2cpp/ 记得勾 swap
 
 ```ini
 lib_deps =
-    https://github.com/Axeuh/Axeuh_UI.git
+    https://github.com/Axeuh/WuQingYuan_UI.git
 ```
 
 ### 硬件连接
@@ -97,12 +97,12 @@ lib_deps =
 
 ```cpp
 /*
- * 基于Arduino的UI系统示例代码，使用Axeuh_UI库实现复杂界面交互
+ * 基于Arduino的UI系统示例代码，使用WuQingYuan_UI库实现复杂界面交互
  * 包含矩阵键盘输入、OLED显示、多级菜单、动画、滑动条、3D立方体等多种功能
  */
 
 #include <Arduino.h>
-#include "Axeuh_UI.h"
+#include "WuQingYuan_UI.h"
 #include "gif.h"
 #include <Wire.h>
 #include <SPI.h>
@@ -121,7 +121,7 @@ lib_deps =
 // 使用硬件SPI的OLED显示配置（参数：旋转方向, CS引脚, DC引脚, Reset引脚）
 // U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2_(U8G2_R0); //iic方案
 U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2_(U8G2_R0, OLED_CS, OLED_DC, OLED_Reset);
-Axeuh_UI myui(&u8g2_); // 初始化UI系统
+WuQingYuan_UI myui(&u8g2_); // 初始化UI系统
 
 // 动画资源定义 ----------------------------------------------------
 // 声明图片列表参数信息
@@ -153,7 +153,7 @@ Menu_gif my_gif_4 = {epd_bitmap_allArray1, 30, 40, 2, 50, 50, 30, 0, AutoPlay, S
 MenuOption myOptions1[] = // 菜单信息
     {
         {"[ 首页 ]", 14, ALIGN_CENTER, TEXT, nullptr, No_Trigger, nullptr, No_Focusing},
-        {"Axeuh_UI 2.0", 14},
+        {"WuQingYuan_UI 2.0", 14},
         {"~ 设置fps上限", 14},
         {"~ 当前选项高度", 12},
         {"多行文本测试12345678", 24, LEFT_CENTER, TEXT_MORE},
@@ -186,7 +186,7 @@ static MenuOption myOptions3[] = // 菜单信息
         {"5", 14},
         {"~ 返回", 14, LEFT_CENTER, TEXT, nullptr, Trigger},
 };
-String version_t = R"(Axeuh_UI 2.0
+String version_t = R"(WuQingYuan_UI 2.0
 折腾了几个星期
 重构了代码
 主要功能和特性:
@@ -206,34 +206,34 @@ String version_t = R"(Axeuh_UI 2.0
 )";
 
 // UI组件声明 ------------------------------------------------------
-Axeuh_UI_StatusBar my_statusbar; // 声明状态栏
-Axeuh_UI_Cube cube;              // 3D立方体
+WuQingYuan_UI_StatusBar my_statusbar; // 声明状态栏
+WuQingYuan_UI_Cube cube;              // 3D立方体
 
-Axeuh_UI_TextMenu my_text_1_Panel(myOptions1, sizeof(myOptions1) / sizeof(myOptions1[0])); // 声明菜单
-Axeuh_UI_TextMenu my_text_2(myOptions2, sizeof(myOptions2) / sizeof(myOptions2[0]));       // 声明菜单
-Axeuh_UI_TextMenu my_text_3(myOptions3, sizeof(myOptions3) / sizeof(myOptions3[0]));       // 声明菜单
+WuQingYuan_UI_TextMenu my_text_1_Panel(myOptions1, sizeof(myOptions1) / sizeof(myOptions1[0])); // 声明菜单
+WuQingYuan_UI_TextMenu my_text_2(myOptions2, sizeof(myOptions2) / sizeof(myOptions2[0]));       // 声明菜单
+WuQingYuan_UI_TextMenu my_text_3(myOptions3, sizeof(myOptions3) / sizeof(myOptions3[0]));       // 声明菜单
 
 // 传递文本 String
-Axeuh_UI_Ebook my_Ebook_1(version_t); // 声明文本查看窗口
+WuQingYuan_UI_Ebook my_Ebook_1(version_t); // 声明文本查看窗口
 
 // String name,        滑动条标题文本
 // float *num,        对应修改值的指针
 // int16_t min,        最小值
 // int16_t max,        最大值
 // float unit_ = 1       刻度单位
-Axeuh_UI_slider my_slider("当前选项高度", nullptr, 12, 50); // 声明滑动条窗体
+WuQingYuan_UI_slider my_slider("当前选项高度", nullptr, 12, 50); // 声明滑动条窗体
 
-Axeuh_UI_Keyboard keyborad; // 声明拼音键盘
+WuQingYuan_UI_Keyboard keyborad; // 声明拼音键盘
 
 // 面板声明 ----------------------------------------------------
 // 不重复的面板，可以保留多层级的菜单的位置等属性，而不是每次都要重新设置
-Axeuh_UI_Panel my_Panel_1;
-Axeuh_UI_Panel my_Panel_2;
-Axeuh_UI_Panel my_Panel_3;
-Axeuh_UI_Panel my_Panel_4;
-Axeuh_UI_Panel my_Panel_text;
-Axeuh_UI_Panel my_Panel_slider;
-Axeuh_UI_Panel my_Panel_keyboard;
+WuQingYuan_UI_Panel my_Panel_1;
+WuQingYuan_UI_Panel my_Panel_2;
+WuQingYuan_UI_Panel my_Panel_3;
+WuQingYuan_UI_Panel my_Panel_4;
+WuQingYuan_UI_Panel my_Panel_text;
+WuQingYuan_UI_Panel my_Panel_slider;
+WuQingYuan_UI_Panel my_Panel_keyboard;
 
 // 输入处理函数 ----------------------------------------------------
 IN_PUT_Mode my_ui_input()
@@ -252,10 +252,10 @@ IN_PUT_Mode my_ui_input()
 }
 // 回调函数组 ------------------------------------------------------
 // 设置菜单回调
-void AllCallback_my_text3(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_text3(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
-  // Axeuh_UI_Panel *p            为当前面板类
-  // Axeuh_UI *m                总ui类
+  // WuQingYuan_UI_Panel *p            为当前面板类
+  // WuQingYuan_UI *m                总ui类
   // p->get_textmenu_num_now();  返回当前选项的索引
   int key = p->get_textmenu_num_now();
   if (key == 7)
@@ -274,7 +274,7 @@ void AllCallback_my_text3(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void AllCallback_my_text2(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_text2(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
   int key = p->get_textmenu_num_now(); // 获取当前选中选项
 
@@ -342,7 +342,7 @@ void AllCallback_my_text2(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void AllCallback_my_Popup_text1(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_Popup_text1(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
   int key = 0;
   key = p->get_textmenu_num_now();
@@ -418,7 +418,7 @@ void AllCallback_my_Popup_text1(Axeuh_UI_Panel *p, Axeuh_UI *m)
   }
 }
 
-void my_ebook_callback(Axeuh_UI_Panel *p, Axeuh_UI *m) // 文本显示窗口的回调函数  在退出时触发
+void my_ebook_callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m) // 文本显示窗口的回调函数  在退出时触发
 {
   p->Parent_Panel->Input_of(); // 打开父级面板的输入
   p->off();                    // 关闭
@@ -513,18 +513,18 @@ void loop()
 ## UI 结构示意
 
 ```
-Axeuh_UI
-├── Axeuh_UI_Panel (首级面板)
-│ └── [Axeuh_UI_Panel*] (可无限递归的子面板)
-├── Axeuh_UI_Cube (立方体组件)
-└── Axeuh_UI_StatusBar (状态栏)
+WuQingYuan_UI
+├── WuQingYuan_UI_Panel (首级面板)
+│ └── [WuQingYuan_UI_Panel*] (可无限递归的子面板)
+├── WuQingYuan_UI_Cube (立方体组件)
+└── WuQingYuan_UI_StatusBar (状态栏)
 
-Axeuh_UI_Panel
-├── [Axeuh_UI_Panel*] (子面板)
-├── Axeuh_UI_TextMenu (文本浏览窗口)
-├── Axeuh_UI_Ebook (菜单)
-├── Axeuh_UI_slider (滑动条)
-├── Axeuh_UI_Keyboard (拼音键盘)
+WuQingYuan_UI_Panel
+├── [WuQingYuan_UI_Panel*] (子面板)
+├── WuQingYuan_UI_TextMenu (文本浏览窗口)
+├── WuQingYuan_UI_Ebook (菜单)
+├── WuQingYuan_UI_slider (滑动条)
+├── WuQingYuan_UI_Keyboard (拼音键盘)
 └── Menu_gif (图片)
 ```
 
@@ -532,7 +532,7 @@ Axeuh_UI_Panel
 
 # 核心类说明
 
-## Axeuh_UI（框架）
+## WuQingYuan_UI（框架）
 
 ### 初始化：
 
@@ -555,15 +555,15 @@ menu_display_xtaskbegin(Memory_size,xCoreID);
 
 ### 添加实例：
 
-`Axeuh_UI`是所有实例类的父类(`public`)，除了一些表单类之外。因此，所有实例都会受`Axeuh_UI`参数的改变而影响。以下是`Axeuh_UI`可以承载的实例：
+`WuQingYuan_UI`是所有实例类的父类(`public`)，除了一些表单类之外。因此，所有实例都会受`WuQingYuan_UI`参数的改变而影响。以下是`WuQingYuan_UI`可以承载的实例：
 
-- `Axeuh_UI_Panel` 面板
-- `Axeuh_UI_Cube` 立方体
-- `Axeuh_UI_StatusBar` 状态栏
+- `WuQingYuan_UI_Panel` 面板
+- `WuQingYuan_UI_Cube` 立方体
+- `WuQingYuan_UI_StatusBar` 状态栏
 
 ```cpp
-Axeuh_UI myui();
-Axeuh_UI_Cube cube;
+WuQingYuan_UI myui();
+WuQingYuan_UI_Cube cube;
 void setup()
 {
   myui.begin();
@@ -578,8 +578,8 @@ void setup()
 在每一帧都会运行这个函数。这是操作 UI 必要的函数。
 
 ```cpp
-Axeuh_UI_TextMenu mymenu;
-void my_Callback(Axeuh_UI_Panel *p, Axeuh_UI *m)
+WuQingYuan_UI_TextMenu mymenu;
+void my_Callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
 }
 void setup()
@@ -591,18 +591,18 @@ void setup()
 回调函数类型
 
 ```cpp
-typedef IN_PUT_Mode (*Axeuh_UI_input_callback)();
+typedef IN_PUT_Mode (*WuQingYuan_UI_input_callback)();
 ```
 
 ### 添加`u8g2`
 
-作为基于 u8g2 的 UI 库，所以`Axeuh_UI`需要获得 u8g2 实例的指针，才能完成绘制工作，下面是添加 u8g2 指针的方法：
+作为基于 u8g2 的 UI 库，所以`WuQingYuan_UI`需要获得 u8g2 实例的指针，才能完成绘制工作，下面是添加 u8g2 指针的方法：
 
 方法一
 
 ```cpp
 U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, OLED_CS, OLED_DC, OLED_Reset);
-Axeuh_UI myui(&u8g2);//直接传参
+WuQingYuan_UI myui(&u8g2);//直接传参
 ```
 
 方法二
@@ -658,26 +658,26 @@ get_fps_max();
 
 ---
 
-## Axeuh_UI_Panel（面板）
+## WuQingYuan_UI_Panel（面板）
 
 ### 添加实例
 
-**`Axeuh_UI_Panel`是一个面板，需要承载一个实例，而实例则继承面板的参数，以下是可以承载的实例：**
+**`WuQingYuan_UI_Panel`是一个面板，需要承载一个实例，而实例则继承面板的参数，以下是可以承载的实例：**
 
-- `Axeuh_UI_TextMenu` 菜单
-- `Axeuh_UI_Ebook` 文本浏览窗口
-- `Axeuh_UI_slider` 滑动条
-- `Axeuh_UI_Keyboard` 拼音键盘
+- `WuQingYuan_UI_TextMenu` 菜单
+- `WuQingYuan_UI_Ebook` 文本浏览窗口
+- `WuQingYuan_UI_slider` 滑动条
+- `WuQingYuan_UI_Keyboard` 拼音键盘
 - `Menu_gif` 图片
-- `Axeuh_UI_Panel` 面板
+- `WuQingYuan_UI_Panel` 面板
 
 你只需要`set`(&`你要添加的实例`);就行。
 
 例如：
 
 ```cpp
-static Axeuh_UI_Panel my_Panel;
-static Axeuh_UI_Ebook my_Ebook("hello，这里是Axeuh");
+static WuQingYuan_UI_Panel my_Panel;
+static WuQingYuan_UI_Ebook my_Ebook("hello，这里是Axeuh");
 
 my_Panel.set(&my_menu);
 ```
@@ -685,23 +685,23 @@ my_Panel.set(&my_menu);
 **同时你也可以直接使用构造函数承载实例。**
 
 ```cpp
-static Axeuh_UI_Ebook my_Ebook("hello，这里是Axeuh");
-static Axeuh_UI_Panel my_Panel(&my_Ebook);
+static WuQingYuan_UI_Ebook my_Ebook("hello，这里是Axeuh");
+static WuQingYuan_UI_Panel my_Panel(&my_Ebook);
 ```
 
 **添加子面板也同样是`set`(&`你要添加的面板`);**
 
 ```cpp
-static Axeuh_UI_Panel my_Panel1;
-static Axeuh_UI_Panel my_Panel2;
+static WuQingYuan_UI_Panel my_Panel1;
+static WuQingYuan_UI_Panel my_Panel2;
 my_Panel2.set(&my_Panel1);
 ```
 
 或者
 
 ```cpp
-static Axeuh_UI_Panel my_Panel1;
-static Axeuh_UI_Panel my_Panel2(&my_Panel1);
+static WuQingYuan_UI_Panel my_Panel1;
+static WuQingYuan_UI_Panel my_Panel2(&my_Panel1);
 ```
 
 ### 添加回调函数
@@ -711,9 +711,9 @@ static Axeuh_UI_Panel my_Panel2(&my_Panel1);
 该函数会把回调函数传递给当前面板的实例，注意要先绑定实例再传递回调函数。
 
 ```cpp
-Axeuh_UI_Ebook my_Ebook("hello，这里是Axeuh");
-Axeuh_UI_Panel my_Panel;
-void my_Callback(Axeuh_UI_Panel *p, Axeuh_UI *m)
+WuQingYuan_UI_Ebook my_Ebook("hello，这里是Axeuh");
+WuQingYuan_UI_Panel my_Panel;
+void my_Callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
 }
 void setup()
@@ -759,7 +759,7 @@ set_lucency(1);
 
 ### 设置面板位置和大小
 
-`x`为 x 轴，`y`为 y 轴，`w`为宽，`h`为高，`r`为圆角大小，圆角大小仅`Axeuh_UI_slider`生效。都是`int16_t`类型。
+`x`为 x 轴，`y`为 y 轴，`w`为宽，`h`为高，`r`为圆角大小，圆角大小仅`WuQingYuan_UI_slider`生效。都是`int16_t`类型。
 
 - `set_x`(`x`);
 - `set_y`(`y`);
@@ -771,7 +771,7 @@ set_lucency(1);
 
 ### 设置面板动画目前位置和大小
 
-`x_now`为 x 轴，`y_now`为 y 轴，`w_now`为宽，`h_now`为高，`r_now`为圆角大小，圆角大小仅`Axeuh_UI_slider`生效。都是`int16_t`类型。
+`x_now`为 x 轴，`y_now`为 y 轴，`w_now`为宽，`h_now`为高，`r_now`为圆角大小，圆角大小仅`WuQingYuan_UI_slider`生效。都是`int16_t`类型。
 
 - `set_interface_now_x`(`x_now`);
 - `set_interface_now_y`(`y_now`);
@@ -783,7 +783,7 @@ set_lucency(1);
 
 ### 设置面板动画偏移值
 
-`x`为 x 轴，`y`为 y 轴，`w`为宽，`h`为高，`r`为圆角大小，圆角大小仅`Axeuh_UI_slider`生效。都是`int16_t`类型。
+`x`为 x 轴，`y`为 y 轴，`w`为宽，`h`为高，`r`为圆角大小，圆角大小仅`WuQingYuan_UI_slider`生效。都是`int16_t`类型。
 
 要想实现动画修改这个数值就可以了，当然你直接改页面参数也是有动画效果的。但是不会保留这个面板本来的位置和大小。
 
@@ -824,7 +824,7 @@ int key = get_textmenu_num_now();
 
 ---
 
-## Axeuh_UI_TextMenu (文本菜单)
+## WuQingYuan_UI_TextMenu (文本菜单)
 
 ### 添加菜单内容
 
@@ -833,7 +833,7 @@ MenuOption options[] = {
   {"温度设置", 12, LEFT_CENTER, TEXT},
   {"亮度调节", 12, LEFT_CENTER, TEXT}
 };
-Axeuh_UI_TextMenu menu(options, 2);
+WuQingYuan_UI_TextMenu menu(options, 2);
 ```
 
 或
@@ -843,7 +843,7 @@ MenuOption options[] = {
   {"温度设置", 12, LEFT_CENTER, TEXT},
   {"亮度调节", 12, LEFT_CENTER, TEXT}
 };
-Axeuh_UI_TextMenu menu;
+WuQingYuan_UI_TextMenu menu;
 menu.set(options, 2);
 ```
 
@@ -887,13 +887,13 @@ set_menuOptions_y(2,10);
 
 `set`(&`你的回调函数`);
 
-`Axeuh_UI_TextMenu`的回调函数在选中任意选项时执行。如果选中的选项有回调函数，则不会触发`Axeuh_UI_TextMenu`的回调函数，而是触发选项的回调函数。
+`WuQingYuan_UI_TextMenu`的回调函数在选中任意选项时执行。如果选中的选项有回调函数，则不会触发`WuQingYuan_UI_TextMenu`的回调函数，而是触发选项的回调函数。
 
-与`Axeuh_UI_Panel`中设置回调函数功能一致。
+与`WuQingYuan_UI_Panel`中设置回调函数功能一致。
 
 ```cpp
-Axeuh_UI_TextMenu mymenu;
-void my_Callback(Axeuh_UI_Panel *p, Axeuh_UI *m)
+WuQingYuan_UI_TextMenu mymenu;
+void my_Callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
 }
 void setup()
@@ -905,7 +905,7 @@ void setup()
 回调函数类型
 
 ```cpp
-typedef void (*textMenuCallback)(Axeuh_UI_Panel*, Axeuh_UI*);
+typedef void (*textMenuCallback)(WuQingYuan_UI_Panel*, WuQingYuan_UI*);
 ```
 
 ---
@@ -929,7 +929,7 @@ typedef void (*textMenuCallback)(Axeuh_UI_Panel*, Axeuh_UI*);
 MenuOption myOptions[] = // 菜单信息
     {
         {"[ 首页 ]", 14, ALIGN_CENTER, TEXT, nullptr, No_Trigger, nullptr, No_Focusing},
-        {"Axeuh_UI 2.0", 14},
+        {"WuQingYuan_UI 2.0", 14},
         {"~ 设置fps上限", 14},
         {"~ 当前选项高度", 12},
         {"多行文本测试12345678", 24, LEFT_CENTER, TEXT_MORE},
@@ -941,7 +941,7 @@ MenuOption myOptions[] = // 菜单信息
         {"~ 键盘", 14, LEFT_CENTER, TEXT, nullptr, No_Trigger},
 };
 
-Axeuh_UI_TextMenu my_menu(myOptions, sizeof(myOptions) / sizeof(myOptions[0]));
+WuQingYuan_UI_TextMenu my_menu(myOptions, sizeof(myOptions) / sizeof(myOptions[0]));
 ```
 
 需要注意的是，菜单表单的选项文本在元数据中并不是`String`类型，而是`MenuOption::AutolenString`类型。
@@ -950,7 +950,7 @@ Axeuh_UI_TextMenu my_menu(myOptions, sizeof(myOptions) / sizeof(myOptions[0]));
 
 如果将`MenuOption::AutolenString`类型传递或引用成`String`类型，修改`String`类型的字符串虽然菜单文本会发生改变，但不会自动更新选项的宽度，这会导致选项宽度和文本长度不匹配。
 
-如果想更新选项宽度，可手动运行`Axeuh_UI_TextMenu`中的`init_text_more()`函数计算所有选项的宽度并保存。
+如果想更新选项宽度，可手动运行`WuQingYuan_UI_TextMenu`中的`init_text_more()`函数计算所有选项的宽度并保存。
 
 如果遇到本应该能够使用的`String`的函数未定义，可手动添加并实现`MenuOption::AutolenString`的`String`的函数
 
@@ -983,7 +983,7 @@ Menu_gif my_gif_2 = {icons_Homer_SimpsonallArray2, 1, 5, 2, 50, 50};
 
 ---
 
-## Axeuh_UI_slider（滑动条）
+## WuQingYuan_UI_slider（滑动条）
 
 ### 构造及设置
 
@@ -1000,14 +1000,14 @@ Menu_gif my_gif_2 = {icons_Homer_SimpsonallArray2, 1, 5, 2, 50, 50};
 
 ```cpp
 int a=0;
-static Axeuh_UI_slider my_slider("设置a", &a, 0, 50, 0.5);
+static WuQingYuan_UI_slider my_slider("设置a", &a, 0, 50, 0.5);
 ```
 
 或者
 
 ```cpp
 int a=0;
-static Axeuh_UI_slider my_slider;
+static WuQingYuan_UI_slider my_slider;
 void setup()
 {
   my_slider.set("设置a", &a, 0, 50, 0.5);
@@ -1021,7 +1021,7 @@ void setup()
 
 ---
 
-## Axeuh_UI_Cube（立方体）
+## WuQingYuan_UI_Cube（立方体）
 
 ### 设置位置和大小
 
@@ -1036,7 +1036,7 @@ void setup()
 `set_cube_now`( `cube_x`, `cube_y`, `cube_scale`);设置实时坐标位置和大小
 
 ```cpp
-static Axeuh_UI_Cube cube;
+static WuQingYuan_UI_Cube cube;
 
 cube.set_cube(10,10);
 cube.set_cube(10,10,15);
@@ -1057,7 +1057,7 @@ cube.set_cube_now(10,10,15);
 `set_cube_rotate_speed`(`angleX`,`angleY`,`angleZ`);
 
 ```cpp
-static Axeuh_UI_Cube cube;
+static WuQingYuan_UI_Cube cube;
 
 cube.set_cube_rotate_x(1);
 cube.set_cube_rotate_y(2);
@@ -1078,7 +1078,7 @@ cube.set_cube_rotate(1,2,3);
 `set_cube_rotate_speed`(`angleX_speed`,`angleY_speed`,`angleZ_speed`);
 
 ```cpp
-static Axeuh_UI_Cube cube;
+static WuQingYuan_UI_Cube cube;
 
 cube.set_cube_rotate_speed_x(0.01);
 cube.set_cube_rotate_speed_y(0.02);
@@ -1100,7 +1100,7 @@ cube.set_cube_rotate_speed(0.01,0.02,0.03);
 `get_scale()` 返回类型是`float`
 
 ```cpp
-static Axeuh_UI_Cube cube;
+static WuQingYuan_UI_Cube cube;
 
 cube.get_cube_x()
 cube.get_cube_y()
@@ -1113,19 +1113,19 @@ cube.get_angleZ_speed()
 cube.get_scale()
 ```
 
-## Axeuh_UI_StatusBar（状态栏）
+## WuQingYuan_UI_StatusBar（状态栏）
 
 ### 设置参数
 
 ```cpp
-static Axeuh_UI_StatusBar bar;
+static WuQingYuan_UI_StatusBar bar;
 bar.set_y(10);
 bar.set_y_now(10);
 ```
 
 状态栏随便写的，可根据自己需求改库文件，后续会添加自定义回调函数
 
-## Axeuh_UI_Ebook（文本查看框）
+## WuQingYuan_UI_Ebook（文本查看框）
 
 ### 构建
 
@@ -1134,27 +1134,27 @@ bar.set_y_now(10);
 `int16_t` `y` y 坐标，默认为 0  
 `alignMode` `a` 对齐方式，默认为 LEFT_CENTER（文本查看框暂不支持对齐方式）
 
-`Axeuh_UI_Ebook`(`s`,`x`,`y`,`a`);  
+`WuQingYuan_UI_Ebook`(`s`,`x`,`y`,`a`);  
 `set`(`s`,`x`,`y`,`a`);
 
 ```cpp
-static Axeuh_UI_Ebook Ebook;
+static WuQingYuan_UI_Ebook Ebook;
 Ebook.set("你好，这里是Axeuh");
 Ebook.set("你好，这里是Axeuh",0,0,LEFT_CENTER);
 
-static Axeuh_UI_Ebook Ebook1("你好，这里是Axeuh");
-static Axeuh_UI_Ebook Ebook2("你好，这里是Axeuh",0,0,LEFT_CENTER);
+static WuQingYuan_UI_Ebook Ebook1("你好，这里是Axeuh");
+static WuQingYuan_UI_Ebook Ebook2("你好，这里是Axeuh",0,0,LEFT_CENTER);
 ```
 
 ### 设置回调函数
 
 `set`(&`你的回调函数`);
 
-退出文本查看框时，如果设置了回调函数，则执行回调函数，没设置回调函数，则自动将父级面板的实例的输入开关打开，并关闭`Axeuh_UI_Ebook`的显示开关和输入开关，并将面板 y 动画偏移值`interlude_y` 设置成`-64`
+退出文本查看框时，如果设置了回调函数，则执行回调函数，没设置回调函数，则自动将父级面板的实例的输入开关打开，并关闭`WuQingYuan_UI_Ebook`的显示开关和输入开关，并将面板 y 动画偏移值`interlude_y` 设置成`-64`
 
 ```cpp
-Axeuh_UI_Ebook Ebook;
-void my_Callback(Axeuh_UI_Panel *p, Axeuh_UI *m)
+WuQingYuan_UI_Ebook Ebook;
+void my_Callback(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
 }
 void setup()
@@ -1166,10 +1166,10 @@ void setup()
 回调函数类型
 
 ```cpp
-typedef void (*MenuCallback_Ebook)(Axeuh_UI_Panel *p, Axeuh_UI *m);
+typedef void (*MenuCallback_Ebook)(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m);
 ```
 
-## Axeuh_UI_Keyboard（拼音键盘）
+## WuQingYuan_UI_Keyboard（拼音键盘）
 
 ### 构建
 
@@ -1179,19 +1179,19 @@ typedef void (*MenuCallback_Ebook)(Axeuh_UI_Panel *p, Axeuh_UI *m);
 `set`(`Aoutput`);  
 `set`(&`output`);
 
-`Axeuh_UI_Keyboard`(`Aoutput`);  
-`Axeuh_UI_Keyboard`(&`output`);
+`WuQingYuan_UI_Keyboard`(`Aoutput`);  
+`WuQingYuan_UI_Keyboard`(&`output`);
 
 ```cpp
 MenuOption myOption ={"hello",12};
 String acc="hello";
-Axeuh_UI_Keyboard mykeyboard;
+WuQingYuan_UI_Keyboard mykeyboard;
 void setup()
 {
   mykeyboard.set(myOption.name);
   mykeyboard.set(&acc);
-  static Axeuh_UI_Keyboard mykeyboard1(myOption.name);
-  static Axeuh_UI_Keyboard mykeyboard2(&acc);
+  static WuQingYuan_UI_Keyboard mykeyboard1(myOption.name);
+  static WuQingYuan_UI_Keyboard mykeyboard2(&acc);
 }
 ```
 
@@ -1206,11 +1206,11 @@ void setup()
 有两种回调函数类型
 
 ```cpp
-typedef void (*MenuCallback_Ebook)(Axeuh_UI_Panel *p, Axeuh_UI *m);
-typedef IN_PUT_Mode (*Axeuh_UI_input_callback)();
+typedef void (*MenuCallback_Ebook)(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m);
+typedef IN_PUT_Mode (*WuQingYuan_UI_input_callback)();
 ```
 
-`typedef IN_PUT_Mode (*Axeuh_UI_input_callback)();`  
+`typedef IN_PUT_Mode (*WuQingYuan_UI_input_callback)();`  
 这个回调函数用于 UI 的输入处理，函数需要返回`UP` `DOWN` `LEFT` `RIGHT` `SELECT` `STOP`。  
 判断逻辑由自己实现，在无输入下默认返回`STOP`。
 
@@ -1234,17 +1234,17 @@ IN_PUT_Mode my_ui_input()
 }
 ```
 
-`typedef void (*MenuCallback_Ebook)(Axeuh_UI_Panel *p, Axeuh_UI *m);`  
+`typedef void (*MenuCallback_Ebook)(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m);`  
 这个函数是实现界面的响应所要执行的操作。例如菜单选中选项会执行该回调函数，我们通过判断当前的选项而执行相应的选项操作：切换菜单、进入子菜单、或者执行其他操作
 
-其中`Axeuh_UI_Panel *p`是当前面板，使用`*p`可以直接操作和修改当前的面板，例如打开或关闭，或者添加子面板，或者替换实例。
+其中`WuQingYuan_UI_Panel *p`是当前面板，使用`*p`可以直接操作和修改当前的面板，例如打开或关闭，或者添加子面板，或者替换实例。
 
-其中`Axeuh_UI *m`是整个 UI 框架类指针，可以修改整个框架的 UI 参数，例如 fps 上限。
+其中`WuQingYuan_UI *m`是整个 UI 框架类指针，可以修改整个框架的 UI 参数，例如 fps 上限。
 
 例如：
 
 ```cpp
-void AllCallback_my_Popup_text1(Axeuh_UI_Panel *p, Axeuh_UI *m)
+void AllCallback_my_Popup_text1(WuQingYuan_UI_Panel *p, WuQingYuan_UI *m)
 {
   int key = 0;
   key = p->get_textmenu_num_now();//获取菜单当前选中的选项
