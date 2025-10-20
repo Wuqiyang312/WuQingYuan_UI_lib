@@ -57,65 +57,88 @@ void Axeuh_UI_Ebook::drawEbook(U8G2 *D, IN_PUT_Mode IN, Axeuh_UI_Panel *P, Axeuh
                 // }
                 // D->drawUTF8(s_x + align_x, s_y + align_y + font_offset_y, s.c_str());
 
-                int name_leng = s.length();
                 if (s_len == 0)
                 {
                     init_text_more();
                 }
-                for (int j = 0; j < name_leng; j++)
+                align_y = 0;
+                switch (align)
                 {
-                    char currentChar = s.charAt(j);
-                    switch (align)
-                    {
-                    case LEFT_CORNER:
-                        break;
-                    case ALIGN_CENTER:
-                    case LEFT_CENTER:
-                        uint8_t string_text_line = s_len / *w_now + 1;
-                        align_y = (*h_now - string_text_line * font_height) / 2;
-                        if (string_text_line > *h_now / font_height)
-                            align_y = 0;
-                        break;
-                    }
+                case LEFT_CORNER:
+                    break;
+                case ALIGN_CENTER:
+                case LEFT_CENTER:
+                {
+                    uint8_t string_text_line = s_len / *w_now + 1;
+                    align_y = (*h_now - string_text_line * font_height) / 2;
+                    if (string_text_line > *h_now / font_height)
+                        align_y = 0;
+                    break;
+                }
+                }
 
+                const char *p = s.c_str();
+                while (*p)
+                {
+                    unsigned char lead = static_cast<unsigned char>(*p);
                     int16_t drawtext_y = font_offset_y + text_height_now + align_y + *y_now + 2;
 
-                    if (currentChar == '\r' || currentChar == '\t' || currentChar == '\n')
+                    if (lead == '\r' || lead == '\t' || lead == '\n')
+                    {
+                        y_ += font_height;
+                        x_ = 0;
+                        ++p;
+                        continue;
+                    }
+
+                    uint8_t charLen = 1;
+                    if ((lead & 0x80) != 0)
+                    {
+                        if ((lead & 0xE0) == 0xC0)
+                            charLen = 2;
+                        else if ((lead & 0xF0) == 0xE0)
+                            charLen = 3;
+                        else if ((lead & 0xF8) == 0xF0)
+                            charLen = 4;
+                    }
+
+                    uint8_t actualLen = charLen;
+                    for (uint8_t i = 1; i < charLen; ++i)
+                    {
+                        if (p[i] == '\0')
+                        {
+                            actualLen = i;
+                            break;
+                        }
+                    }
+                    if (actualLen == 0)
+                    {
+                        actualLen = 1;
+                    }
+
+                    uint8_t sub = len_c.Get(p, actualLen);
+
+                    if (page_y_now + drawtext_y + y_ > *y_now - 12 && page_y_now + drawtext_y + y_ < *y_now + *h_now + 12)
+                    {
+                        char glyph[5] = {0, 0, 0, 0, 0};
+                        memcpy(glyph, p, actualLen);
+                        D->drawUTF8(page_x_now + x_ + *x_now + 2,
+                                    page_y_now + drawtext_y + y_,
+                                    glyph);
+                    }
+
+                    if (x_ + sub > *w_now - sub - 6)
                     {
                         y_ += font_height;
                         x_ = 0;
                     }
-                    else if (isChineseChar(currentChar))
-                    {
-                        if (page_y_now + drawtext_y + y_ > *y_now - 12 && page_y_now + drawtext_y + y_ < *y_now + *h_now + 12)
-                            D->drawUTF8(page_x_now + x_ + *x_now + 2,
-                                        page_y_now + drawtext_y + y_,
-                                        (s.substring(j, j + 3)).c_str());
-                        if (x_ + font_height > *w_now - font_height - 6)
-                        {
-                            y_ += font_height;
-                            x_ = 0;
-                        }
-                        else
-                            x_ += len_c.Get((s.substring(j, j + 3)).c_str());
-                        j += 2;
-                    }
                     else
                     {
-                        int sub = len_c.Get((s.substring(j, j + 1)).c_str());
-                        if (page_y_now + drawtext_y + y_ > *y_now - 12 && page_y_now + drawtext_y + y_ < *y_now + *h_now + 12)
-                            D->drawUTF8(page_x_now + x_ + *x_now + 2,
-                                        page_y_now + drawtext_y + y_,
-                                        (s.substring(j, j + 1)).c_str());
-
-                        if (x_ + sub > *w_now - sub - 6)
-                        {
-                            y_ += font_height;
-                            x_ = 0;
-                        }
-                        else
-                            x_ += sub;
+                        x_ += sub;
                     }
+
+                    p += actualLen;
+
                     if (y_ > *h_now - page_y_now)
                     {
                         // break;

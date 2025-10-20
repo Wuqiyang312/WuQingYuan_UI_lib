@@ -90,23 +90,24 @@ public:
         return false;
     }
 
-    uint8_t Get(String c_s)
+    uint8_t Get(const char *utf8, uint8_t length)
     {
-        char c[4] = {0, 0, 0, 0};
-        strncpy(c, c_s.c_str(), sizeof(c) - 1);
+        if (length > 4)
+        {
+            length = 4;
+        }
 
-        // if (isChineseChar(c[0]))//如果是中文字符直接输出长度，减少计算（没什么效果）
-        //     return 12;
+        char key[4] = {0, 0, 0, 0};
+        memcpy(key, utf8, length);
 
         for (int i = 0; i < size; i++)
         {
-            if (fastCompare4(Charlen[i].utf8Char, c))
+            if (fastCompare4(Charlen[i].utf8Char, key))
             {
                 return Charlen[i].width;
             }
         }
 
-        // 如果空间不足，自动扩容
         if (size >= maxSize)
         {
             expand();
@@ -114,15 +115,27 @@ public:
 
         if (D != nullptr)
         {
-            // 添加新字符到数组末尾
-            memcpy(Charlen[size].utf8Char, c, 4);
-            Charlen[size].width = D->getUTF8Width(c) + 1;
-            size++; // 更新已用数量
-            // Serial.println("已使用:" + (String)size);
+            memcpy(Charlen[size].utf8Char, key, 4);
+            char temp[5] = {0, 0, 0, 0, 0};
+            memcpy(temp, key, 4);
+            Charlen[size].width = D->getUTF8Width(temp) + 1;
+            size++;
             return Charlen[size - 1].width;
         }
         else
+        {
             return 0;
+        }
+    }
+
+    uint8_t Get(String c_s)
+    {
+        uint8_t length = c_s.length();
+        if (length > 4)
+        {
+            length = 4;
+        }
+        return Get(c_s.c_str(), length);
     }
 };
 
@@ -569,26 +582,45 @@ public:
     // 触发更新
     void triggerUpdate()
     {
-        int name_leng = name.length();
         int all_len_ = 0;
-        for (int alen = 0; alen < name_leng; alen++)
+        const char *p = name.c_str();
+        while (*p)
         {
-            char currentChar = name.charAt(alen);
-            if (currentChar == '\r' || currentChar == '\t' || currentChar == '\n')
+            unsigned char lead = static_cast<unsigned char>(*p);
+            if (lead == '\r' || lead == '\t' || lead == '\n')
             {
+                ++p;
                 continue;
             }
-            if (isChineseChar(currentChar))
+
+            uint8_t charLen = 1;
+            if ((lead & 0x80) != 0)
             {
-                all_len_ += len_c.Get((name.substring(alen, alen + 3)).c_str());
-                alen += 2;
+                if ((lead & 0xE0) == 0xC0)
+                    charLen = 2;
+                else if ((lead & 0xF0) == 0xE0)
+                    charLen = 3;
+                else if ((lead & 0xF8) == 0xF0)
+                    charLen = 4;
             }
-            else
+
+            uint8_t actualLen = charLen;
+            for (uint8_t i = 1; i < charLen; ++i)
             {
-                all_len_ += len_c.Get((name.substring(alen, alen + 1)).c_str());
+                if (p[i] == '\0')
+                {
+                    actualLen = i;
+                    break;
+                }
             }
+            if (actualLen == 0)
+            {
+                actualLen = 1;
+            }
+
+            all_len_ += len_c.Get(p, actualLen);
+            p += actualLen;
         }
-        // Serial.println(all_len);
         all_len = all_len_;
     }
 
@@ -709,24 +741,44 @@ public:
         for (int i = 0; i < menuOptions_index; i++)
         {
             MenuOption &m = menuOptions[i];
-            int name_leng = m.name.length();
             int all_len_ = 0;
-            for (int alen = 0; alen < name_leng; alen++)
+            const char *p = m.name.c_str();
+            while (*p)
             {
-                char currentChar = m.name.charAt(alen);
-                if (currentChar == '\r' || currentChar == '\t' || currentChar == '\n')
+                unsigned char lead = static_cast<unsigned char>(*p);
+                if (lead == '\r' || lead == '\t' || lead == '\n')
                 {
+                    ++p;
                     continue;
                 }
-                if (isChineseChar(currentChar))
+
+                uint8_t charLen = 1;
+                if ((lead & 0x80) != 0)
                 {
-                    all_len_ += len_c.Get((m.name.substring(alen, alen + 3)).c_str());
-                    alen += 2;
+                    if ((lead & 0xE0) == 0xC0)
+                        charLen = 2;
+                    else if ((lead & 0xF0) == 0xE0)
+                        charLen = 3;
+                    else if ((lead & 0xF8) == 0xF0)
+                        charLen = 4;
                 }
-                else
+
+                uint8_t actualLen = charLen;
+                for (uint8_t i = 1; i < charLen; ++i)
                 {
-                    all_len_ += len_c.Get((m.name.substring(alen, alen + 1)).c_str());
+                    if (p[i] == '\0')
+                    {
+                        actualLen = i;
+                        break;
+                    }
                 }
+                if (actualLen == 0)
+                {
+                    actualLen = 1;
+                }
+
+                all_len_ += len_c.Get(p, actualLen);
+                p += actualLen;
             }
             m.all_len = all_len_;
         }
